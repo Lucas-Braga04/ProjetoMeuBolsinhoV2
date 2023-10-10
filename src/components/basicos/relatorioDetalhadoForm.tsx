@@ -32,6 +32,7 @@ type Despesa = {
     descricao: string;
     valor: string;
     data: string;
+    editado: boolean;
 };
 
 type Categoria = {
@@ -71,7 +72,10 @@ function RelatorioDetalhadoForm() {
         // Copie o array de despesas e atualize o valor do campo "editando" para o índice especificado
         const newData = categoriaData.map((despesa, i) => {
             if (i === index) {
-                return { ...despesa, editando: !despesa.editando };
+                return {
+                    ...despesa, 
+                    editando: !despesa.editando,
+                 };
             }
             return despesa;
         });
@@ -89,12 +93,37 @@ function RelatorioDetalhadoForm() {
     };
 
     const handleSaveChanges = (index: number) => {
+
+        //Limpar a marcação de editado ao salvar as alterações feitas
+        const updateCategoriaData = categoriaData.map((despesa, i) =>{
+            if(i === index){
+                return{
+                    ...despesa,
+                    editado: true
+                };
+            }
+            return despesa;
+        })
+
+
+
+
+
+        /*[...categoriaData];
+        updateCategoriaData[index] = {
+            ...updateCategoriaData[index],
+            editado:false
+        };*/
+
+        setCategoriaData(updateCategoriaData);
+
+
         // Atualize os dados no localStorage com as alterações feitas
         const existingData = JSON.parse(localStorage.getItem('despesas') || '[]') as Categoria[];
         const categoriaIndex = existingData.findIndex((item) => item.tipo === selectedCategoria);
 
         if (categoriaIndex !== -1) {
-            existingData[categoriaIndex].despesas = categoriaData;
+            existingData[categoriaIndex].despesas = updateCategoriaData;
             localStorage.setItem('despesas', JSON.stringify(existingData));
         }
 
@@ -132,7 +161,7 @@ function RelatorioDetalhadoForm() {
                         <ul className="text-white">
                             {categoriaData.map((despesa, index) => (
                                 <form key={index} onSubmit={(e) => e.preventDefault()}>
-                                    <li className="flex bg-gray-600 rounded-md border-gray-700 text-white px-2 py-2 m-2 sm:justify-between">
+                                    <li key={index} className={`flex ${despesa.editado ? 'bg-yellow-200' : 'bg-gray-600'} rounded-md border-gray-700 text-white px-2 py-2 m-2 sm:justify-between`}>
                                         <div className="flex justify-between items-center w-full">
                                             <label className="flex justify-center items-center">
                                                 <input
@@ -144,6 +173,7 @@ function RelatorioDetalhadoForm() {
                                                 />
                                                 {despesa.editando ? 'Modificado' : 'Editar'}
                                             </label>
+                                            {despesa.editado && <span className="text-yellow-600">Editado</span>}
                                             {despesa.editando ? (
                                                 <div className="flex flex-col lg:flex-row w-full">
                                                     <div className="w-auto lg:w-3/4 xl:w-3/5  p-2">
