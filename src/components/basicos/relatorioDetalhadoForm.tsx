@@ -135,79 +135,96 @@ function RelatorioDetalhadoForm() {
                                                 {despesa.editando ? 'Modificado' : 'Editar'}
                                             </label>
                                             {despesa.editando ? (
-                                                <>
-                                                    <input
-                                                        value={despesa.descricao}
-                                                        className="w-full sm:w-1/3 bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
-                                                        type="text"
-                                                        id="descricao"
-                                                        name="descricao"
-                                                        onChange={(e) => {
-                                                            const newValue = e.target.value;
-                                                            setCategoriaData((prevState) =>
-                                                                prevState.map((item, idx) =>
-                                                                    idx === index ? { ...item, descricao: newValue } : item
-                                                                )
-                                                            );
-                                                        }}
-                                                    />
-                                                    <input
-                                                        value={"Valor: "+ despesa.valor}
-                                                        className="w-full sm:w-1/3 bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
-                                                        type="text"
-                                                        id="valor"
-                                                        name="valor"
-                                                        onChange={(e) => {
-                                                            const newValue = e.target.value;
-                                                            setCategoriaData((prevState) =>
-                                                                prevState.map((item, idx) =>
-                                                                    idx === index ? { ...item, valor: newValue } : item
-                                                                )
-                                                            );
-                                                        }}
-                                                    />
-                                                    <input
-                                                        value={despesa.data}
-                                                        className="min-w-110 sm:w-1/5 bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
-                                                        type="date"
-                                                        id="data"
-                                                        name="data"
-                                                        onChange={(e) => {
-                                                            const newValue = e.target.value;
-                                                            setCategoriaData((prevState) =>
-                                                                prevState.map((item, idx) =>
-                                                                    idx === index ? { ...item, data: newValue } : item
-                                                                )
-                                                            );
-                                                        }}
-                                                    />
-                                                    <button
-                                                        className="bg-white text-black font-semibold rounded-md px-4 py-1 hover:bg-blue-900 hover:text-white transition-all duration-200 mt-2 sm:mt-0"
-                                                        type="button"
-                                                        onClick={() => handleSaveChanges(index)}
-                                                    >
-                                                        Salvar
-                                                    </button>
-                                                </>
+                                                <div className="flex flex-col lg:flex-row w-full">
+                                                    <div className="w-auto lg:w-3/4 xl:w-3/5  p-2">
+                                                        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+                                                            <strong className="text-white block">Descrição:</strong>
+                                                            <input
+                                                                value={despesa.descricao}
+                                                                className="w-full bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
+                                                                type="text"
+                                                                id="descricao"
+                                                                name="descricao"
+                                                                onChange={(e) => {
+                                                                    const newValue = e.target.value;
+                                                                    setCategoriaData((prevState) =>
+                                                                        prevState.map((item, idx) =>
+                                                                            idx === index ? { ...item, descricao: newValue } : item
+                                                                        )
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-auto xl:w-2/5 p-2">
+                                                        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+                                                            <strong className="text-white block">Valor:</strong>
+                                                            <input
+                                                                value={despesa.valor}
+                                                                className="w-full bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
+                                                                type="text"
+                                                                id="valor"
+                                                                name="valor"
+                                                                onChange={(e) => {
+                                                                    const newValue = e.target.value;
+                                                                    setCategoriaData((prevState) =>
+                                                                        prevState.map((item, idx) =>
+                                                                            idx === index ? { ...item, valor: newValue } : item
+                                                                        )
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-auto xl:w-2/5 p-2">
+                                                        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+                                                            <strong className="text-white block">Data:</strong>
+                                                            <input
+                                                                value={despesa.data}
+                                                                className="w-full bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
+                                                                type="date"
+                                                                id="data"
+                                                                name="data"
+                                                                onChange={(e) => {
+                                                                    const newValue = e.target.value;
+                                                                    setCategoriaData((prevState) =>
+                                                                        prevState.map((item, idx) =>
+                                                                            idx === index ? { ...item, data: newValue } : item
+                                                                        )
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-auto p-2">
+                                                        <button
+                                                            className="bg-white text-black font-semibold rounded-md px-4 py-2 hover:bg-blue-900 hover:text-white transition-all duration-200 w-full"
+                                                            type="button"
+                                                            onClick={() => handleSaveChanges(index)}
+                                                        >
+                                                            Salvar
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             ) : (
                                                 <>
-                                                        <div className="flex items-center w-10/12">
-                                                            <div className="flex-1">
-                                                                <span className="text-white">
-                                                                    <strong>Descrição:</strong> {despesa.descricao}
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <span className="text-white">
-                                                                    <strong>Valor:</strong> R$ {parseFloat(despesa.valor).toFixed(2)}
-                                                                </span>
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <span className="text-white">
-                                                                    <strong>Data:</strong> {formatarData(despesa.data)}
-                                                                </span>
-                                                            </div>
+                                                    <div className="flex items-center w-10/12">
+                                                        <div className="flex-auto">
+                                                            <span className="text-white">
+                                                                <strong>Descrição:</strong> {despesa.descricao}
+                                                            </span>
                                                         </div>
+                                                        <div className="flex-auto">
+                                                            <span className="text-white">
+                                                                <strong>Valor:</strong> R$ {parseFloat(despesa.valor).toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex-nowrap">
+                                                            <span className="text-white">
+                                                                <strong>Data:</strong> {formatarData(despesa.data)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                 </>
                                             )}
                                         </div>
