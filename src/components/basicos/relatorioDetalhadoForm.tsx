@@ -1,10 +1,29 @@
 import React, { useState, useEffect } from 'react';
 // Função para formatar a data no formato "aaaa/mm/dd"
-function formatarData(data: string): string {
-    const dataObj = new Date(data);
+function formatarData(data: Date | string): string {
+    let dataObj: Date;
+
+    if (typeof data === 'string') {
+        dataObj = new Date(data);
+
+        if (isNaN(dataObj.getTime())) {
+            throw new Error('Data inválida');
+        }
+    } else if (data instanceof Date) {
+        dataObj = data;
+    } else {
+        throw new Error('Tipo de entrada inválido');
+    }
+
+    // Obtenha o offset do fuso horário local em minutos
+    const offsetMinutes = dataObj.getTimezoneOffset();
+
+    // Adicione o offset do fuso horário local à data antes de formatá-la
+    dataObj.setMinutes(dataObj.getMinutes() + offsetMinutes);
+
     const ano = dataObj.getFullYear();
-    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0'); // Adiciona 0 à esquerda se for menor que 10
-    const dia = dataObj.getDate().toString().padStart(2, '0'); // Adiciona 0 à esquerda se for menor que 10
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+    const dia = dataObj.getDate().toString().padStart(2, '0');
     return `${dia}/${mes}/${ano}`;
 }
 // Crie tipos para representar os dados das despesas
@@ -74,10 +93,10 @@ function RelatorioDetalhadoForm() {
     };
 
     return (
-        <div className="mt-4 flex flex-col bg-gray-950 rounded-lg p-4 shadow-sm sm:w-2/3 w-2/4">
+        <div className="mt-4 flex flex-col bg-gray-950 rounded-lg p-4 shadow-sm sm:w-2/3 w-full">
             <div>
                 <h2 className="text-white font-bold text-lg">Relatório Detalhado</h2>
-                <div className="flex flex-row space-x-2">
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-2">
                     <div className="flex-1 mt-4">
                         <label className="text-white" htmlFor="categoria">
                             Categoria
@@ -103,73 +122,95 @@ function RelatorioDetalhadoForm() {
                         <ul className="text-white">
                             {categoriaData.map((despesa, index) => (
                                 <form key={index} onSubmit={(e) => e.preventDefault()}>
-                                    <li className="flex bg-gray-600 rounded-md border-gray-700 text-white px-2 m-2 justify-between" key={index}>
-                                        <label className="flex justify-center items-center">
-                                            <input
-                                                className="flex justify-center items-center"
-                                                type="checkbox"
-                                                name="editando"
-                                                checked={despesa.editando || false}
-                                                onChange={() => handleCheckboxChange(index)}
-                                            />
-                                            {despesa.editando ? 'Modificado' : 'Editar'}
-                                        </label>
-                                        {despesa.editando ? (
-                                            <>
+                                    <li className="flex bg-gray-600 rounded-md border-gray-700 text-white px-2 py-2 m-2 sm:justify-between">
+                                        <div className="flex justify-between items-center w-full">
+                                            <label className="flex justify-center items-center">
                                                 <input
-                                                    value={despesa.descricao}
-                                                    className="bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
-                                                    type="text"
-                                                    id="descricao"
-                                                    name="descricao"
-                                                    onChange={(e) => {
-                                                        const newValue = e.target.value;
-                                                        setCategoriaData((prevState) =>
-                                                            prevState.map((item, idx) => (idx === index ? { ...item, descricao: newValue } : item))
-                                                        );
-                                                    }}
+                                                    className="flex justify-center items-center"
+                                                    type="checkbox"
+                                                    name="editando"
+                                                    checked={despesa.editando || false}
+                                                    onChange={() => handleCheckboxChange(index)}
                                                 />
-                                                <input
-                                                    value={despesa.valor}
-                                                    className="bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
-                                                    type="text"
-                                                    id="valor"
-                                                    name="valor"
-                                                    onChange={(e) => {
-                                                        const newValue = e.target.value;
-                                                        setCategoriaData((prevState) =>
-                                                            prevState.map((item, idx) => (idx === index ? { ...item, valor: newValue } : item))
-                                                        );
-                                                    }}
-                                                />
-                                                <input
-                                                    value={despesa.data}
-                                                    className="bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
-                                                    type="date"
-                                                    id="data"
-                                                    name="data"
-                                                    onChange={(e) => {
-                                                        const newValue = e.target.value;
-                                                        setCategoriaData((prevState) =>
-                                                            prevState.map((item, idx) => (idx === index ? { ...item, data: newValue } : item))
-                                                        );
-                                                    }}
-                                                />
-                                                <button
-                                                    className="bg-white text-black font-semibold rounded-md px-4 py-1 hover:bg-blue-900 hover:text-white transition-all duration-200"
-                                                    type="button"
-                                                    onClick={() => handleSaveChanges(index)}
-                                                >
-                                                    Salvar
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span>{`Descrição: ${despesa.descricao}, Valor: R$ ${parseFloat(despesa.valor).toFixed(
-                                                    2
-                                                    )}, Data: ${formatarData(despesa.data)}`}</span>
-                                            </>
-                                        )}
+                                                {despesa.editando ? 'Modificado' : 'Editar'}
+                                            </label>
+                                            {despesa.editando ? (
+                                                <>
+                                                    <input
+                                                        value={despesa.descricao}
+                                                        className="w-full sm:w-1/3 bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
+                                                        type="text"
+                                                        id="descricao"
+                                                        name="descricao"
+                                                        onChange={(e) => {
+                                                            const newValue = e.target.value;
+                                                            setCategoriaData((prevState) =>
+                                                                prevState.map((item, idx) =>
+                                                                    idx === index ? { ...item, descricao: newValue } : item
+                                                                )
+                                                            );
+                                                        }}
+                                                    />
+                                                    <input
+                                                        value={"Valor: "+ despesa.valor}
+                                                        className="w-full sm:w-1/3 bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
+                                                        type="text"
+                                                        id="valor"
+                                                        name="valor"
+                                                        onChange={(e) => {
+                                                            const newValue = e.target.value;
+                                                            setCategoriaData((prevState) =>
+                                                                prevState.map((item, idx) =>
+                                                                    idx === index ? { ...item, valor: newValue } : item
+                                                                )
+                                                            );
+                                                        }}
+                                                    />
+                                                    <input
+                                                        value={despesa.data}
+                                                        className="min-w-110 sm:w-1/5 bg-gray-600 rounded-md border-gray-700 text-white px-2 py-1"
+                                                        type="date"
+                                                        id="data"
+                                                        name="data"
+                                                        onChange={(e) => {
+                                                            const newValue = e.target.value;
+                                                            setCategoriaData((prevState) =>
+                                                                prevState.map((item, idx) =>
+                                                                    idx === index ? { ...item, data: newValue } : item
+                                                                )
+                                                            );
+                                                        }}
+                                                    />
+                                                    <button
+                                                        className="bg-white text-black font-semibold rounded-md px-4 py-1 hover:bg-blue-900 hover:text-white transition-all duration-200 mt-2 sm:mt-0"
+                                                        type="button"
+                                                        onClick={() => handleSaveChanges(index)}
+                                                    >
+                                                        Salvar
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                        <div className="flex items-center w-10/12">
+                                                            <div className="flex-1">
+                                                                <span className="text-white">
+                                                                    <strong>Descrição:</strong> {despesa.descricao}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <span className="text-white">
+                                                                    <strong>Valor:</strong> R$ {parseFloat(despesa.valor).toFixed(2)}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <span className="text-white">
+                                                                    <strong>Data:</strong> {formatarData(despesa.data)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </li>
                                 </form>
                             ))}
