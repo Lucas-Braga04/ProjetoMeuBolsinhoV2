@@ -76,6 +76,16 @@ function RelatorioDetalhadoForm() {
             return despesa;
         });
         setCategoriaData(newData);
+
+        //Atualizando o localStorage com os dados brutos
+        const existingData = JSON.parse(localStorage.getItem('despesas') || '[]') as Categoria[];
+        const categoriaIndex = existingData.findIndex((item) => item.tipo === selectedCategoria);
+
+        if(categoriaIndex !== -1){
+            existingData[categoriaIndex].despesas = newData;
+            localStorage.setItem('despesas', JSON.stringify(existingData));
+        }
+
     };
 
     const handleSaveChanges = (index: number) => {
@@ -84,7 +94,7 @@ function RelatorioDetalhadoForm() {
         const categoriaIndex = existingData.findIndex((item) => item.tipo === selectedCategoria);
 
         if (categoriaIndex !== -1) {
-            existingData[categoriaIndex].despesas[index] = categoriaData[index];
+            existingData[categoriaIndex].despesas = categoriaData;
             localStorage.setItem('despesas', JSON.stringify(existingData));
         }
 
