@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 // Função para formatar a data no formato "aaaa/mm/dd"
 function formatarData(data: Date | string): string {
     let dataObj: Date;
@@ -99,21 +100,11 @@ function RelatorioDetalhadoForm() {
             if(i === index){
                 return{
                     ...despesa,
-                    editado: true
+                    editado: true,
                 };
             }
             return despesa;
         })
-
-
-
-
-
-        /*[...categoriaData];
-        updateCategoriaData[index] = {
-            ...updateCategoriaData[index],
-            editado:false
-        };*/
 
         setCategoriaData(updateCategoriaData);
 
@@ -171,9 +162,9 @@ function RelatorioDetalhadoForm() {
                                                     checked={despesa.editando || false}
                                                     onChange={() => handleCheckboxChange(index)}
                                                 />
-                                                {despesa.editando ? 'Modificado' : 'Editar'}
+                                                {despesa.editando ? 'Modificando' : 'Editar'}
                                             </label>
-                                            {despesa.editado && <span className="text-yellow-600">Editado</span>}
+                                            {despesa.editado && <span className="text-yellow-500 p-4">Editado</span>}
                                             {despesa.editando ? (
                                                 <div className="flex flex-col lg:flex-row w-full">
                                                     <div className="w-auto lg:w-3/4 xl:w-3/5  p-2">
